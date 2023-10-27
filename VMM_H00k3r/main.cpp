@@ -6,25 +6,25 @@
 #include <iostream>
 #include <Psapi.h>
 
-#include <gdiplus.h>
-#pragma comment (lib, "Gdiplus.lib")
+//#include <gdiplus.h>
+//#pragma comment (lib, "Gdiplus.lib")
 
 typedef uint64_t ui64, *pui64;
 
-Gdiplus::ARGB AddColors(Gdiplus::ARGB left, Gdiplus::ARGB right)
-{
-    uint32_t a = min(0xFF000000, (left & 0xFF000000) + (right & 0xFF000000));
-    uint32_t r = min(0x00FF0000, (left & 0x00FF0000) + (right & 0x00FF0000));
-    uint32_t g = min(0x0000FF00, (left & 0x0000FF00) + (right & 0x0000FF00));
-    uint32_t b = min(0x000000FF, (left & 0x000000FF) + (right & 0x000000FF));
-
-    return a | r | g | b;
-}
-
-Gdiplus::ARGB ReturnRed(Gdiplus::ARGB left, Gdiplus::ARGB right)
-{
-    return 0xffff0000;
-}
+//Gdiplus::ARGB AddColors(Gdiplus::ARGB left, Gdiplus::ARGB right)
+//{
+//    uint32_t a = min(0xFF000000, (left & 0xFF000000) + (right & 0xFF000000));
+//    uint32_t r = min(0x00FF0000, (left & 0x00FF0000) + (right & 0x00FF0000));
+//    uint32_t g = min(0x0000FF00, (left & 0x0000FF00) + (right & 0x0000FF00));
+//    uint32_t b = min(0x000000FF, (left & 0x000000FF) + (right & 0x000000FF));
+//
+//    return a | r | g | b;
+//}
+//
+//Gdiplus::ARGB ReturnRed(Gdiplus::ARGB left, Gdiplus::ARGB right)
+//{
+//    return 0xffff0000;
+//}
 
 void* AllocatePageNearAddress(void* TargetAddress)
 {
@@ -79,8 +79,6 @@ void* AllocatePageNearAddress(void* TargetAddress)
     return nullptr;
 
 }
-
-
 
 void WriteAbsoluteJump64(void* relayAddress, void* addressToJumpTo)
 {
