@@ -6,6 +6,11 @@
 #include <iostream>
 #include <Psapi.h>
 
+
+#include <disasmtypes.h>
+#include <bddisasm.h>
+
+
 //#include <gdiplus.h>
 //#pragma comment (lib, "Gdiplus.lib")
 
@@ -158,21 +163,60 @@ int Open3DPaintButtonHandler()
     return 0;
 }
 
-//int main()
-//{
-//    InstallHook(AddColors, ReturnRed);
-//
-//    Gdiplus::ARGB col = AddColors(0x00000000, 0x000000FF);
-//    std::cout << "Final color:" << std::hex << col;
-//    return 0;
-//}
-
-BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD ul_reason_for_call, LPVOID lpvReserved)
+void GetFirstBytes(void* address)
 {
-    if (ul_reason_for_call == DLL_PROCESS_ATTACH)
+
+}
+
+int main()
+{
+    /* InstallHook(AddColors, ReturnRed);
+
+     Gdiplus::ARGB col = AddColors(0x00000000, 0x000000FF);
+     std::cout << "Final color:" << std::hex << col;
+     return 0;*/
+    uint8_t instructions[] = { 0x48, 0x89, 0x4c, 0x24, 0x08, // mov
+        0x55, // push
+        0x57, // push
+        0x48, 0x81, 0xec, 0x08, 0x01, 0x00, 0x00, // sub
+        0x48, 0x8d, 0x6c, 0x24, 0x20 }; // lea
+
+    uint8_t instructions_dis[] = {
+        0x85, 0xc9,
+        0x74, 0x26,
+        0x83, 0xf9, 0x01,
+        0x74, 0x0c
+    };
+
+    INSTRUX instrux = { 0 };
+    for (int offset = 0; offset < 5; offset += instrux.Length)
     {
-        InstallHook(GetFunc2HookAddr(), Open3DPaintButtonHandler); //we'll fill this in later
+        // decode instruction
+        RtlSecureZeroMemory(&instrux, sizeof(instrux));
+        NDSTATUS status = NdDecodeEx(&instrux, instructions_dis + offset, 0x10, ND_CODE_64, ND_DATA_64);
+        if (!ND_SUCCESS(status))
+        {
+            // on fail, go to next byte
+            instrux.Length = 1;
+            continue;
+        }
+
+        for (int i = 0; i < instrux.Length; i++)
+        {
+            printf("0x%X ", instrux.InstructionBytes[i]);
+        }
+        std::cout << '\n';
     }
+
+    //if (ul_reason_for_call == DLL_PROCESS_ATTACH)
+    //{
+    //    InstallHook(GetFunc2HookAddr(), Open3DPaintButtonHandler); //we'll fill this in later
+    //}
     return true;
 }
+
+//BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD ul_reason_for_call, LPVOID lpvReserved)
+//{
+//    
+//}
 
